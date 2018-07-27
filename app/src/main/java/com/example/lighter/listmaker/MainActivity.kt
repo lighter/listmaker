@@ -1,7 +1,7 @@
 package com.example.lighter.listmaker
 
+import android.content.Intent
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -12,7 +12,11 @@ import android.view.MenuItem
 import android.widget.EditText
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ListSelectionRecyclerViewAdapter.ListSelectionRecyclerViewClickListener {
+
+    companion object {
+        val INTENT_LIST_KEY = "list"
+    }
 
     lateinit var listsRecyclerView: RecyclerView
     val listDataManager: ListDataManager = ListDataManager(this)
@@ -37,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         listsRecyclerView.layoutManager = LinearLayoutManager(this)
 
         // 2
-        listsRecyclerView.adapter = ListSelectionRecyclerViewAdapter(lists)
+        listsRecyclerView.adapter = ListSelectionRecyclerViewAdapter(lists, this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -78,9 +82,25 @@ class MainActivity : AppCompatActivity() {
             recyclerAdapter.addList(list)
 
             dialog.dismiss()
+            showListDetail(list)
         }
 
         // 4
         builder.create().show()
+    }
+
+    private fun showListDetail(list: ListTask) {
+        // 1
+        val listDetailIntent = Intent(this, ListDetailActivity::class.java)
+
+        // 2
+        listDetailIntent.putExtra(INTENT_LIST_KEY, list)
+
+        // 3
+        startActivity(listDetailIntent)
+    }
+
+    override fun listItemClicked(list: ListTask) {
+        showListDetail(list)
     }
 }
